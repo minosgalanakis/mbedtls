@@ -1791,6 +1791,9 @@ mpi_fill_random:MBEDTLS_MPI_MAX_SIZE:MBEDTLS_MPI_MAX_SIZE-1:0:MBEDTLS_ERR_ENTROP
 Most negative mbedtls_mpi_sint
 most_negative_mpi_sint:
 
+Test mbedtls_mpi_mul_mpi #99 Issue7658 Data
+mpi_mul_mpi_mod_red:"ffffffff00000001000000000000000000000000ffffffffffffffffffffffff":"4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5":"55df5d5850f47bad82149139979369fe498a9022a412b5e0bedd2cfc21c3ed91"
+
 MPI Selftest
 depends_on:MBEDTLS_SELF_TEST
 mpi_selftest:

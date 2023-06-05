@@ -819,6 +819,39 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE */
+void mpi_mul_mpi_mod_red(char *input_N, char *input_X, char *result)
+{
+    mbedtls_mpi X, N, tmp, res;
+    mbedtls_mpi_init(&X); mbedtls_mpi_init(&N); mbedtls_mpi_init(&tmp); mbedtls_mpi_init(&res);
+
+    /* Read Inputs */
+    TEST_ASSERT(mbedtls_test_read_mpi(&X, input_X) == 0);
+    TEST_ASSERT(mbedtls_test_read_mpi(&N, input_N) == 0);
+    TEST_ASSERT(mbedtls_test_read_mpi(&res, result) == 0);
+
+    /* Calculated expected output size in bytes */
+    const size_t bytes = res.n * sizeof(mbedtls_mpi_uint);
+
+    /* tmp = X * X */
+    TEST_ASSERT(mbedtls_mpi_mul_mpi(&tmp, &X, &X) == 0);
+    TEST_ASSERT(sign_is_valid(&tmp));
+
+    /* Reduce tmp/ N*/
+    mbedtls_mpi_mod_mpi(&tmp, &tmp, &N);
+    ASSERT_COMPARE(tmp.p, bytes, res.p, bytes);
+
+    /* Reduce again tmp/ N*/
+    mbedtls_mpi_mod_mpi(&tmp, &tmp, &N);
+    /* Result shouldn't change */
+    ASSERT_COMPARE(tmp.p, bytes, res.p, bytes);
+
+exit:
+    mbedtls_mpi_free(&X); mbedtls_mpi_free(&N); mbedtls_mpi_free(&tmp); mbedtls_mpi_free(&res);
+
+}
+/* END_CASE */
+
+/* BEGIN_CASE */
 void mpi_mul_int(char *input_X, int input_Y,
                  char *input_A, char *result_comparison)
 {
