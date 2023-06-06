@@ -123,7 +123,9 @@ typedef struct {
     mbedtls_mpi_uint mm;         /* Montgomery const for -N^{-1} mod 2^{ciL} */
 } mbedtls_mpi_mont_struct;
 
-typedef void *mbedtls_mpi_opt_red_struct;
+typedef struct {
+    int(*modp)(mbedtls_mpi *); 
+} mbedtls_mpi_opt_red_struct;
 
 typedef struct {
     const mbedtls_mpi_uint *p;
@@ -134,7 +136,7 @@ typedef struct {
         /* if int_rep == #MBEDTLS_MPI_MOD_REP_MONTGOMERY */
         mbedtls_mpi_mont_struct mont;
         /* if int_rep == #MBEDTLS_MPI_MOD_REP_OPT_RED */
-        mbedtls_mpi_opt_red_struct ored;
+        mbedtls_mpi_opt_red_struct *ored;
     } rep;
 } mbedtls_mpi_mod_modulus;
 
