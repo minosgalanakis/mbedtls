@@ -4631,6 +4631,8 @@ MBEDTLS_STATIC_TESTABLE
 int mbedtls_ecp_mod_p256k1_raw(mbedtls_mpi_uint *X, size_t X_limbs);
 #endif
 
+static int mbedtls_ecp_setup(mbedtls_mpi_mod_modulus *N, mbedtls_ecp_group_id id);
+
 #if defined(ECP_LOAD_GROUP)
 #define LOAD_GROUP_A(G)   ecp_group_load(grp,            \
                                          G ## _p,  sizeof(G ## _p),   \
@@ -4860,6 +4862,92 @@ int mbedtls_ecp_group_load(mbedtls_ecp_group *grp, mbedtls_ecp_group_id id)
             grp->id = MBEDTLS_ECP_DP_NONE;
             return MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE;
     }
+}
+
+int mbedtls_ecp_setup(mbedtls_mpi_mod_modulus *N, mbedtls_ecp_group_id id)
+{
+    int ret;
+    size_t limbs;
+    mbedtls_mpi_uint *p;
+    mbedtls_mpi_opt_red_struct ored;
+    
+    switch (id) {
+#if defined(MBEDTLS_ECP_DP_SECP192R1_ENABLED)
+        case MBEDTLS_ECP_DP_SECP192R1:
+            p = (mbedtls_mpi_uint *) secp192r1_p;
+            limbs = CHARS_TO_LIMBS(sizeof(secp192r1_p));
+            limbs = 2 * limbs;
+            ored.modp = &ecp_mod_p192;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_SECP224R1_ENABLED)
+        case MBEDTLS_ECP_DP_SECP224R1:
+            limbs = 448 / biL;
+            ored.modp = &ecp_mod_p224;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_SECP256R1_ENABLED)
+        case MBEDTLS_ECP_DP_SECP256R1:
+            p = (mbedtls_mpi_uint *) secp256r1_p;
+            limbs = CHARS_TO_LIMBS(sizeof(secp256r1_p));
+            limbs = 2 * limbs;
+            ored.modp = &ecp_mod_p256;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_SECP384R1_ENABLED)
+        case MBEDTLS_ECP_DP_SECP384R1:
+            p = (mbedtls_mpi_uint *) secp384r1_p;
+            limbs = CHARS_TO_LIMBS(sizeof(secp384r1_p));
+            limbs = 2 * limbs;
+            ored.modp = &ecp_mod_p384;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_SECP521R1_ENABLED)
+        case MBEDTLS_ECP_DP_SECP521R1:
+            p = (mbedtls_mpi_uint *) secp521r1_p;
+            limbs = CHARS_TO_LIMBS(sizeof(secp521r1_p));
+            ored.modp = &ecp_mod_p521;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_SECP192K1_ENABLED)
+        case MBEDTLS_ECP_DP_SECP192K1:
+            p = (mbedtls_mpi_uint *) secp192k1_p;
+            limbs = CHARS_TO_LIMBS(sizeof(secp192k1_p));
+            ored.modp = &ecp_mod_p192k1;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_SECP224K1_ENABLED)
+        case MBEDTLS_ECP_DP_SECP224K1:
+            limbs = 448 / biL;
+            ored.modp = &ecp_mod_p224k1;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_SECP256K1_ENABLED)
+        case MBEDTLS_ECP_DP_SECP256K1:
+            p = (mbedtls_mpi_uint *) secp256k1_p;
+            limbs = CHARS_TO_LIMBS(sizeof(secp256k1_p));
+            ored.modp = &ecp_mod_p256k1;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED)
+        case MBEDTLS_ECP_DP_CURVE25519:
+            p = (mbedtls_mpi_uint *) curve25519_p;
+            limbs = CHARS_TO_LIMBS(sizeof(curve25519_p));
+            ored.modp = &ecp_mod_p255;
+            break;
+#endif
+#if defined(MBEDTLS_ECP_DP_CURVE448_ENABLED)
+        case MBEDTLS_ECP_DP_CURVE448:
+            p = (mbedtls_mpi_uint *) curve448_p;
+            limbs = CHARS_TO_LIMBS(sizeof(curve448_p));
+            ored.modp = &ecp_mod_p448;
+            break;
+#endif
+        default:
+            return MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE;
+    }
+    ret = mbedtls_mpi_mod_optred_modulus_setup(N, p, limbs, &ored);
+    return ret;
 }
 
 #if defined(MBEDTLS_ECP_NIST_OPTIM)
