@@ -108,33 +108,6 @@
  */
 //#define MBEDTLS_HAVE_SSE2
 
-/**
- * \def MBEDTLS_DEPRECATED_WARNING
- *
- * Mark deprecated functions and features so that they generate a warning if
- * used. Functionality deprecated in one version will usually be removed in the
- * next version. You can enable this to help you prepare the transition to a
- * new major version by making sure your code is not using this functionality.
- *
- * This only works with GCC and Clang. With other compilers, you may want to
- * use MBEDTLS_DEPRECATED_REMOVED
- *
- * Uncomment to get warnings on using deprecated functions and features.
- */
-//#define MBEDTLS_DEPRECATED_WARNING
-
-/**
- * \def MBEDTLS_DEPRECATED_REMOVED
- *
- * Remove deprecated functions and features so that they generate an error if
- * used. Functionality deprecated in one version will usually be removed in the
- * next version. You can enable this to help you prepare the transition to a
- * new major version by making sure your code is not using this functionality.
- *
- * Uncomment to get errors on using deprecated functions and features.
- */
-//#define MBEDTLS_DEPRECATED_REMOVED
-
 /** \} name SECTION: System support */
 
 /**
@@ -251,29 +224,6 @@
  * Uncomment this macro to use less memory for Camellia.
  */
 //#define MBEDTLS_CAMELLIA_SMALL_MEMORY
-
-/**
- * \def MBEDTLS_CHECK_RETURN_WARNING
- *
- * If this macro is defined, emit a compile-time warning if application code
- * calls a function without checking its return value, but the return value
- * should generally be checked in portable applications.
- *
- * This is only supported on platforms where #MBEDTLS_CHECK_RETURN is
- * implemented. Otherwise this option has no effect.
- *
- * Uncomment to get warnings on using fallible functions without checking
- * their return value.
- *
- * \note  This feature is a work in progress.
- *        Warnings will be added to more functions in the future.
- *
- * \note  A few functions are considered critical, and ignoring the return
- *        value of these functions will trigger a warning even if this
- *        macro is not defined. To completely disable return value check
- *        warnings, define #MBEDTLS_CHECK_RETURN with an empty expansion.
- */
-//#define MBEDTLS_CHECK_RETURN_WARNING
 
 /**
  * \def MBEDTLS_CIPHER_MODE_CBC
