@@ -50,7 +50,15 @@ component_test_memsan_constant_flow () {
     scripts/config.py unset MBEDTLS_USE_PSA_CRYPTO
     scripts/config.py unset MBEDTLS_AESNI_C # memsan doesn't grok asm
     scripts/config.py unset MBEDTLS_HAVE_ASM
-    CC=clang cmake -D CMAKE_BUILD_TYPE:String=MemSan .
+    # Auto-generated files are independently compiled and require a minimal
+    # version of mbedtls_config.h and psa_config.h. Passing CMKAE_BUILD_TYPE=Memsan
+    # as a feature to the compiler is not compatbile and re-generating files
+    # is not neccessary.
+
+    # So, disable cmake's (over-sensitive here)
+    # dependency resolution for generated files and just rely on them being
+    # present (thanks to pre_generate_files) by turning GEN_FILES off.
+    CC=clang cmake -D GEN_FILES=Off CMAKE_BUILD_TYPE:String=MemSan .
     make
 
     msg "test: main suites (full minus MBEDTLS_USE_PSA_CRYPTO, Msan + constant flow)"
@@ -69,7 +77,15 @@ component_test_memsan_constant_flow_psa () {
     scripts/config.py set MBEDTLS_TEST_CONSTANT_FLOW_MEMSAN
     scripts/config.py unset MBEDTLS_AESNI_C # memsan doesn't grok asm
     scripts/config.py unset MBEDTLS_HAVE_ASM
-    CC=clang cmake -D CMAKE_BUILD_TYPE:String=MemSan .
+    # Auto-generated files are independently compiled and require a minimal
+    # version of mbedtls_config.h and psa_config.h. Passing CMKAE_BUILD_TYPE=Memsan
+    # as a feature to the compiler is not compatbile and re-generating files
+    # is not neccessary.
+
+    # So, disable cmake's (over-sensitive here)
+    # dependency resolution for generated files and just rely on them being
+    # present (thanks to pre_generate_files) by turning GEN_FILES off.
+    CC=clang cmake -D GEN_FILES=Off -D CMAKE_BUILD_TYPE:String=MemSan .
     make
 
     msg "test: main suites (Msan + constant flow)"
